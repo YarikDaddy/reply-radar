@@ -181,3 +181,13 @@ test("онбординг: новичку показываем, тем кто у�
   assert.equal(isOnboarded({ me: "DaddyYarik" }), true, "настроил до онбординга");
   assert.equal(isOnboarded({ onboarded: true }), true, "пропустил шаги");
 });
+
+test("версии сравниваем по числам", async () => {
+  const { isNewer } = await import("../extension/lib/logic.js");
+  assert.equal(isNewer("v0.5.0", "0.4.0"), true);
+  assert.equal(isNewer("v0.10.0", "0.9.3"), true, "не строкой");
+  assert.equal(isNewer("v0.4.0", "0.4.0"), false);
+  assert.equal(isNewer("v0.3.9", "0.4.0"), false);
+  assert.equal(isNewer("v1.0", "0.9.9"), true);
+  assert.equal(isNewer("nightly", "0.4.0"), false);
+});

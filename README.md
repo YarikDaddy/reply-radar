@@ -7,12 +7,14 @@ A free Chrome extension for X. It watches what X already loads in your browser a
 - 🔔 Desktop notification + badge when a fresh post (≤ 15 min) from an account with 5k+ followers shows up in your feed or list
 - 🔥 **Heat**: how fast the post is taking off compared to that author's usual posts. Mega accounts only ping you when a post is actually flying
 - 📊 **Reply journal**: which of your replies got views, and how many followers you gained today
+- 📡 **Badges right in your X feed** — `💎 2.4K/spot · 11m left` next to the post time, no need to open the popup
 - 💎 **Hidden gems**: posts with a big audience and almost no replies — your reply gets seen by almost everyone who opens them
 - ⏱ **Reply window** countdown and crowd meter (early / busy / crowded)
 - 🎯 **Daily goal + streak**, ✓ marks posts you already replied to (caught the moment you hit Reply — no profile visit needed)
 - 🕘 **Best hours**: when your replies get the most views
 - 🧹 Topic presets, mute words and English-only filter against engagement bait
 - 📱 **Telegram alerts**: hidden gems straight to your phone via your own bot (no server — the extension talks to the Bot API directly)
+- ⬆ Tells you when a new version is out (checks GitHub releases every 6 hours)
 - 🔕 Snooze notifications for an hour, 📸 share card for your build-in-public posts
 - 🔄 Optional auto-refresh of one "radar" tab (e.g. your X list), so it works in the background
 

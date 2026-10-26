@@ -13,6 +13,7 @@ export const DEFAULTS = {
   gemSpot: 2000, // 💎: столько просмотров поста приходится на одно место в ответах
   dailyGoal: 15, // реплаев в день: цель и серия дней подряд
   notify: true,
+  inFeedBadges: true, // метки «📡 💎 · 9m left» прямо в ленте X
   tgEnabled: false, // алерты в Telegram-бота — чтобы не пропустить гем с телефона
   tgToken: "",
   tgChatId: "",
@@ -317,6 +318,18 @@ export function emptyReason(diag, rawSettings) {
     if (top) tips.push("filter:" + top[0]);
   }
   return { scanned: diag?.scanned || 0, newestAge: diag?.newestAge ?? null, fresh, counts, tips };
+}
+
+// "v0.10.0" > "0.9.3": сравниваем версии по числам, а не строкой.
+export function isNewer(latest, current) {
+  const a = String(latest || "").replace(/^v/, "").split(".").map(Number);
+  const b = String(current || "").replace(/^v/, "").split(".").map(Number);
+  for (let i = 0; i < Math.max(a.length, b.length); i++) {
+    const x = a[i] || 0, y = b[i] || 0;
+    if (Number.isNaN(x) || Number.isNaN(y)) return false;
+    if (x !== y) return x > y;
+  }
+  return false;
 }
 
 export function heatLabel(h) {

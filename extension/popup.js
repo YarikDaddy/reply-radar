@@ -12,6 +12,7 @@ let meta = { seen: 0 };
 let snoozeUntil = 0;
 let tgError = null;
 let rawSettings = {};
+let update = {};
 
 async function load() {
   const got = await chrome.storage.local.get(["state", "settings", "meta", "snoozeUntil"]);
@@ -19,6 +20,7 @@ async function load() {
   tgError = (await chrome.storage.local.get("tgError")).tgError || null;
   state = got.state || emptyState();
   rawSettings = got.settings || {};
+  update = (await chrome.storage.local.get("update")).update || {};
   settings = { ...DEFAULTS, ...rawSettings };
   meta = got.meta || { seen: 0 };
 }
@@ -42,7 +44,17 @@ function fixAvatars(root) {
 
 const clock = (t) => new Date(t).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 
+function renderUpdate() {
+  const el = $("#update");
+  const current = chrome.runtime.getManifest().version;
+  el.hidden = !(update.available && update.url && update.latest?.replace(/^v/, "") !== current);
+  if (el.hidden) return;
+  el.href = update.url;
+  el.textContent = `⬆ Reply Radar ${update.latest} is out (you have v${current}) — download →`;
+}
+
 function renderHeader(now, live) {
+  renderUpdate();
   const snoozed = snoozeUntil > now;
   $("#snooze").textContent = snoozed ? "🔕" : "🔔";
   $("#snooze").title = snoozed ? `Notifications paused until ${clock(snoozeUntil)} — click to resume` : "Pause notifications for 1 hour";
@@ -233,6 +245,7 @@ $("#form").addEventListener("submit", async (e) => {
     watchlist: handles(f.watchlist.value),
     muted: handles(f.muted.value),
     notify: f.notify.checked,
+    inFeedBadges: f.inFeedBadges.checked,
     tgToken: f.tgToken.value.trim(),
     tgEnabled: f.tgEnabled.checked,
     tgMode: f.tgMode.value,

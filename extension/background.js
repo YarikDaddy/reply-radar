@@ -1,7 +1,7 @@
 // Фон расширения: принимает посты от вкладок x.com, хранит состояние, шлёт уведомления,
 // держит счётчик на иконке и (если включено) перезагружает вкладку-радар.
 
-import { DEFAULTS, emptyState, heatLabel, heatOf, ingest, liveCount, ago, spotOf, goalStats } from "./lib/logic.js";
+import { DEFAULTS, emptyState, heatLabel, heatOf, ingest, liveCount, ago, spotOf, goalStats, isNewer } from "./lib/logic.js";
 import { buildMessage, sendMessage, wantsTelegram } from "./lib/telegram.js";
 
 async function load() {
@@ -91,9 +91,30 @@ chrome.alarms.onAlarm.addListener((a) => {
   if (a.name === "tick") serial(tick);
 });
 
+// Расширение ставится вручную (Load unpacked), само оно не обновится — раз в 6 часов
+// спрашиваем у GitHub, нет ли новой версии, и показываем плашку в попапе.
+const RELEASES = "https://api.github.com/repos/YarikDaddy/reply-radar/releases/latest";
+
+async function checkUpdate() {
+  const { update = {} } = await chrome.storage.local.get("update");
+  if (Date.now() - (update.checkedAt || 0) < 6 * 60 * 60000) return;
+  try {
+    const res = await fetch(RELEASES, { headers: { Accept: "application/vnd.github+json" } });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const rel = await res.json();
+    const current = chrome.runtime.getManifest().version;
+    await chrome.storage.local.set({
+      update: { checkedAt: Date.now(), latest: rel.tag_name, url: rel.html_url, available: isNewer(rel.tag_name, current) },
+    });
+  } catch {
+    await chrome.storage.local.set({ update: { ...update, checkedAt: Date.now() } }); // офлайн — попробуем через 6 ч
+  }
+}
+
 async function tick() {
   const { state, settings } = await load();
   await updateBadge(state, settings);
+  await checkUpdate();
   if (!settings.autoRefresh || !settings.radarUrl) return;
 
   const { lastRefresh } = await chrome.storage.session.get("lastRefresh");
