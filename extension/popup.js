@@ -132,6 +132,7 @@ const REASON = {
   muteWords: "mute words",
   muted: "muted accounts",
   crowded: "too many replies already",
+  lowReach: "engagement pods (few views per reply spot)",
   calm: "mega account, not hot",
   replied: "you already replied",
 };
@@ -238,6 +239,7 @@ $("#form").addEventListener("submit", async (e) => {
     maxReplies: Math.max(0, num(f.maxReplies.value, DEFAULTS.maxReplies)),
     hotFollowers: num(f.hotFollowers.value, DEFAULTS.hotFollowers),
     gemSpot: Math.max(1, num(f.gemSpot.value, DEFAULTS.gemSpot)),
+    minSpot: Math.max(0, num(f.minSpot.value, DEFAULTS.minSpot)),
     minHeat: num(f.minHeat.value, DEFAULTS.minHeat),
     topics: words(f.topics.value),
     muteWords: words(f.muteWords.value),

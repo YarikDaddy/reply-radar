@@ -11,6 +11,7 @@ export const DEFAULTS = {
   maxReplies: 30, // под постом уже столько ответов — ты не в первом экране; 0 = без лимита
   minHeat: 1.5,
   gemSpot: 2000, // 💎: столько просмотров поста приходится на одно место в ответах
+  minSpot: 25, // меньше — пост крутит пул вовлечения (лайки и реплаи «свои»), твой реплай никто не увидит
   dailyGoal: 15, // реплаев в день: цель и серия дней подряд
   notify: true,
   inFeedBadges: true, // метки «📡 💎 · 9m left» прямо в ленте X
@@ -147,7 +148,7 @@ export function ingest(state, posts, rawSettings, now, diag = null, source = "")
       if (p.isReply) recordReply(state, p, s);
       continue;
     }
-    if (p.isReply || p.isRetweet || p.restricted) continue;
+    if (p.isReply || p.isRetweet || p.restricted || p.promoted) continue;
     const ageMin = (now - p.createdAt) / MIN;
     const isFresh = ageMin <= s.maxAgeMin;
     if (diag) diag.newestAge = Math.min(diag.newestAge ?? Infinity, ageMin);
@@ -181,12 +182,14 @@ export function ingest(state, posts, rawSettings, now, diag = null, source = "")
     const h = heatOf(saved);
     const fresh = ageMin <= s.maxAgeMin;
     const uncrowded = !s.maxReplies || p.metrics.reply_count <= s.maxReplies;
+    const spot = spotOf(p.metrics);
+    const reach = !s.minSpot || spot === null || spot >= s.minSpot;
     const wanted = tierOf(saved, s) === "always" || h === null || h >= s.minHeat;
-    if (fresh && uncrowded && wanted && !saved.alerted && !saved.replied) {
+    if (fresh && uncrowded && reach && wanted && !saved.alerted && !saved.replied) {
       saved.alerted = true;
       alerts.push(saved);
     }
-    why(saved.alerted ? "shown" : saved.replied ? "replied" : !uncrowded ? "crowded" : "calm");
+    why(saved.alerted ? "shown" : saved.replied ? "replied" : !uncrowded ? "crowded" : !reach ? "lowReach" : "calm");
   }
 
   prune(state, now);

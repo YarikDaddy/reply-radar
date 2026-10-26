@@ -58,6 +58,17 @@ test("свой реплай ловится прямо из ответа на о�
   assert.equal(p.author, "DaddyYarik");
 });
 
+test("реклама в ленте и списках помечается promoted (оба признака)", () => {
+  const ad1: any = timeline([tweetResult({ id: "ad1", user: marc, text: "buy perfume", createdAt: now })]);
+  ad1.data.list.tweets_timeline.timeline.instructions[0].entries[0].content.itemContent.promotedMetadata = { advertiser_results: {} };
+  const ad2: any = timeline([tweetResult({ id: "ad2", user: marc, text: "buy more", createdAt: now }), tweetResult({ id: "org", user: marc, text: "organic", createdAt: now })]);
+  ad2.data.list.tweets_timeline.timeline.instructions[0].entries[0].entryId = "promoted-tweet-ad2-15";
+  const byId = Object.fromEntries([...extractPosts(ad1), ...extractPosts(ad2)].map((p: any) => [p.id, p]));
+  assert.equal(byId.ad1.promoted, true);
+  assert.equal(byId.ad2.promoted, true);
+  assert.equal(byId.org.promoted, undefined);
+});
+
 test("длинные посты берут текст из note_tweet; мусор не роняет парсер", () => {
   const t: any = tweetResult({ id: "n", user: marc, text: "short…", createdAt: now });
   t.note_tweet = { note_tweet_results: { result: { text: "full long text" } } };

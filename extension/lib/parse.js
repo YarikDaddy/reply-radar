@@ -50,13 +50,26 @@
     };
   }
 
+  // Реклама: X вставляет промо-посты прямо в ленту и списки, у элемента есть promotedMetadata.
+  // Два признака: promotedMetadata рядом с tweet_results или entryId вида "promoted-tweet-…".
+  function promotedId(node) {
+    let holder = null;
+    if (node.promotedMetadata && node.tweet_results) holder = node;
+    else if (typeof node.entryId === "string" && node.entryId.startsWith("promoted")) holder = node.content && node.content.itemContent;
+    const r = holder && holder.tweet_results && holder.tweet_results.result;
+    return (r && (r.rest_id || (r.tweet && r.tweet.rest_id))) || null;
+  }
+
   function extractPosts(json) {
     const found = new Map();
+    const promoted = new Set();
     const stack = [json];
     let guard = 0;
     while (stack.length && guard++ < 200000) {
       const node = stack.pop();
       if (!node || typeof node !== "object") continue;
+      const ad = promotedId(node);
+      if (ad) promoted.add(ad);
       if (typeof node.rest_id === "string" && node.legacy && node.legacy.created_at && "full_text" in node.legacy) {
         const p = toPost(node);
         if (p && !Number.isNaN(p.createdAt)) found.set(p.id, p);
@@ -66,6 +79,7 @@
         if (v && typeof v === "object") stack.push(v);
       }
     }
+    for (const id of promoted) if (found.has(id)) found.get(id).promoted = true;
     return [...found.values()];
   }
 

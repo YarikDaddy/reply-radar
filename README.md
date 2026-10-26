@@ -12,7 +12,7 @@ A free Chrome extension for X. It watches what X already loads in your browser a
 - ⏱ **Reply window** countdown and crowd meter (early / busy / crowded)
 - 🎯 **Daily goal + streak**, ✓ marks posts you already replied to (caught the moment you hit Reply — no profile visit needed)
 - 🕘 **Best hours**: when your replies get the most views
-- 🧹 Topic presets, mute words and English-only filter against engagement bait
+- 🧹 Topic presets, mute words, English-only filter; skips engagement pods (likes and replies from "their own", almost no views) and promoted posts
 - 📱 **Telegram alerts**: hidden gems straight to your phone via your own bot (no server — the extension talks to the Bot API directly)
 - ⬆ Tells you when a new version is out (checks GitHub releases every 6 hours)
 - 🔕 Snooze notifications for an hour, 📸 share card for your build-in-public posts

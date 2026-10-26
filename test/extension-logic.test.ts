@@ -206,3 +206,17 @@ test("источник: свой X-список и поиск проходят �
   assert.match(q, /min_faves:10 lang:en -filter:replies/);
   assert.equal(new URL(nicheSearchUrl("Crypto")).searchParams.get("f"), "live", "вкладка Latest");
 });
+
+test("пулы вовлечения (мало просмотров на место) и реклама — без алерта", () => {
+  const d: any = {};
+  const m = (likes: number, replies: number, views: number) => ({ like_count: likes, reply_count: replies, retweet_count: 0, quote_count: 0, views });
+  const out = ingest(emptyState(), [
+    post({ id: "pod", metrics: m(16, 16, 56) }),
+    post({ id: "real", metrics: m(18, 9, 1049) }),
+    post({ id: "ad", promoted: true, metrics: m(100, 1, 20000) }),
+    post({ id: "noviews", metrics: { like_count: 3, reply_count: 1, retweet_count: 0, quote_count: 0, views: null } }),
+  ], {}, now, d, "ListLatestTweetsTimeline");
+  assert.deepEqual(out.map((p: any) => p.id), ["real", "noviews"], "без счётчика просмотров не режем");
+  assert.equal(d.fresh.pod, "lowReach");
+  assert.equal(ingest(emptyState(), [post({ id: "pod2", metrics: m(16, 16, 56) })], { minSpot: 0 }, now).length, 1, "0 = выключено");
+});
