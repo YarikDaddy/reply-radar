@@ -9,7 +9,7 @@ function onMessage(e) {
     return;
   }
   try {
-    chrome.runtime.sendMessage({ type: "posts", posts: e.data.posts }).catch(() => {});
+    chrome.runtime.sendMessage({ type: "posts", posts: e.data.posts, op: e.data.op || "" }).catch(() => {});
   } catch {
     window.removeEventListener("message", onMessage);
   }

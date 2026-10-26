@@ -119,7 +119,14 @@ function tierOf(post, s) {
 // Принимает посты из очередного ответа X, обновляет состояние (мутирует) и возвращает,
 // о каких постах надо уведомить прямо сейчас.
 // diag (необязательно) — для «почему пусто»: возраст самого свежего поста и чем отсечён каждый свежий.
-export function ingest(state, posts, rawSettings, now, diag = null) {
+// source — GraphQL-операция, из которой пришли посты. Твой X-список ты собрал сам, поиск — уже по теме:
+// для них фильтр слов не нужен (а для списка — и порог подписчиков).
+export const LIST_OPS = ["ListLatestTweetsTimeline", "ListTimeline"];
+export const SEARCH_OPS = ["SearchTimeline"];
+
+export function ingest(state, posts, rawSettings, now, diag = null, source = "") {
+  const fromList = LIST_OPS.includes(source);
+  const curated = fromList || SEARCH_OPS.includes(source);
   const s = normalizeSettings(rawSettings);
   const alerts = [];
   if (!state.days) {
@@ -148,13 +155,13 @@ export function ingest(state, posts, rawSettings, now, diag = null) {
       if (diag && isFresh) (diag.fresh ||= {})[p.id] = reason;
     };
 
-    const watched = s.watchlist.includes(author);
+    const watched = s.watchlist.includes(author) || fromList;
     if (s.muted.includes(author)) { why("muted"); continue; }
     if (!watched && p.followers < s.minFollowers) { why("followers"); continue; }
     if (s.englishOnly && !watched && !looksEnglish(p.text)) { why("language"); continue; }
     if (findWord(p.text, s.muteWords)) { why("muteWords"); continue; }
     const topic = s.topics.length ? findWord(p.text, s.topics) : null;
-    if (s.topics.length && !watched && !topic) { why("topic"); continue; }
+    if (s.topics.length && !watched && !curated && !topic) { why("topic"); continue; }
 
     const sc = score(p.metrics, ageMin);
     let saved = state.posts[p.id];
@@ -330,6 +337,20 @@ export function isNewer(latest, current) {
     if (x !== y) return x > y;
   }
   return false;
+}
+
+// Поиск X по нише во вкладке «Latest»: свежие посты всех, кто пишет на тему и уже набирает лайки.
+// Это источник для радара побогаче списка из 20 человек.
+// Слова для поиска отобраны вручную: общие («model», «app») тянут шум, эти — разговоры ниши.
+export const SEARCH_PRESETS = {
+  "AI & builders": ["claude", "cursor", "vibe coding", "ai agents", "llm", "openai", "anthropic", "build in public", "indie hacker", "saas", "shipped", "mrr"],
+  Crypto: ["solana", "ethereum", "onchain", "defi", "base chain", "crypto", "web3", "memecoin"],
+};
+
+export function nicheSearchUrl(preset = "AI & builders", minFaves = 10) {
+  const words = (SEARCH_PRESETS[preset] || SEARCH_PRESETS["AI & builders"]).map((w) => (w.includes(" ") ? `"${w}"` : w));
+  const q = `(${words.join(" OR ")}) min_faves:${minFaves} lang:en -filter:replies -filter:nativeretweets`;
+  return `https://x.com/search?q=${encodeURIComponent(q)}&src=typed_query&f=live`;
 }
 
 export function heatLabel(h) {

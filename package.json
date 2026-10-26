@@ -1,6 +1,6 @@
 {
   "name": "reply-radar",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "private": true,
   "type": "module",
   "description": "Know when to reply before everyone else: fresh posts from big X accounts → Telegram",

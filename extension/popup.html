@@ -36,8 +36,9 @@
     <div class="presets" id="wNiche"></div>
   </div></div>
   <div class="w-step"><span class="n">3</span><div>
-    <b>Your radar tab</b><small>open an X list of accounts you reply to (or your Home feed), then:</small>
-    <div class="tg-row"><button type="button" class="btn small" id="wTab">Use current tab</button><span class="tg-status" id="wTabStatus"></span></div>
+    <b>Your radar tab</b><small>a live X search of your niche — or your own X list open in the current tab</small>
+    <div class="tg-row"><button type="button" class="btn small" id="wSearch">🔎 Niche search</button><button type="button" class="link" id="wTab">or use current tab</button></div>
+    <span class="tg-status" id="wTabStatus"></span>
   </div></div>
   <div class="w-go">
     <button type="button" class="btn" id="wStart">Start scanning</button>
@@ -104,6 +105,8 @@
           <label>Every, min<input type="number" name="refreshMin" min="2" max="60"></label>
         </div>
         <button type="button" class="link" id="useTab">↳ Use current tab as radar</button>
+        <div class="search-src"><span>or open a niche search as radar <small>(recommended — way more fresh posts than a small list)</small></span>
+          <div class="presets" id="searchPresets"></div></div>
         <label class="check"><input type="checkbox" name="notify"> Desktop notifications</label>
         <label class="check"><input type="checkbox" name="inFeedBadges"> Show 📡 badges in the X feed</label>
       </fieldset>

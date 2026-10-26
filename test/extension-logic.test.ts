@@ -191,3 +191,18 @@ test("версии сравниваем по числам", async () => {
   assert.equal(isNewer("v1.0", "0.9.9"), true);
   assert.equal(isNewer("nightly", "0.4.0"), false);
 });
+
+test("источник: свой X-список и поиск проходят без фильтра тем; список — и без порога подписчиков", async () => {
+  const { nicheSearchUrl } = await import("../extension/lib/logic.js");
+  const s = { topics: ["ai"] };
+  const offTopic = (id: string, followers = 400000) => post({ id, text: "200 acquisitions on TrustMRR in less than a week", followers });
+  assert.equal(ingest(emptyState(), [offTopic("feed")], s, now, null, "HomeTimeline").length, 0, "из ленты — режем по теме");
+  assert.equal(ingest(emptyState(), [offTopic("list", 900)], s, now, null, "ListLatestTweetsTimeline").length, 1, "из своего списка — проходит");
+  assert.equal(ingest(emptyState(), [offTopic("srch")], s, now, null, "SearchTimeline").length, 1, "из поиска — проходит");
+  assert.equal(ingest(emptyState(), [offTopic("srch2", 900)], s, now, null, "SearchTimeline").length, 0, "но мелочь из поиска режем");
+
+  const q = decodeURIComponent(new URL(nicheSearchUrl("AI & builders")).searchParams.get("q")!);
+  assert.match(q, /^\(claude OR cursor OR "vibe coding"/);
+  assert.match(q, /min_faves:10 lang:en -filter:replies/);
+  assert.equal(new URL(nicheSearchUrl("Crypto")).searchParams.get("f"), "live", "вкладка Latest");
+});

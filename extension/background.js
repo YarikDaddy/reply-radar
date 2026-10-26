@@ -14,15 +14,15 @@ let queue = Promise.resolve();
 const serial = (fn) => (queue = queue.then(fn).catch((e) => console.error("[reply-radar]", e)));
 
 chrome.runtime.onMessage.addListener((msg) => {
-  if (msg && msg.type === "posts") serial(() => handlePosts(msg.posts));
+  if (msg && msg.type === "posts") serial(() => handlePosts(msg.posts, msg.op));
 });
 
-async function handlePosts(posts) {
+async function handlePosts(posts, op = "") {
   const { state, settings } = await load();
   const now = Date.now();
   const before = goalStats(state, settings, now);
   const d = {};
-  const alerts = ingest(state, posts, settings, now, d);
+  const alerts = ingest(state, posts, settings, now, d, op);
   const after = goalStats(state, settings, now);
   const { meta = { seen: 0 } } = await chrome.storage.local.get("meta");
   // диагностика «почему пусто»: пачки за последний час

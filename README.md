@@ -27,7 +27,7 @@ A free Chrome extension for X. It watches what X already loads in your browser a
 3. **Load unpacked** → pick the unzipped folder
 4. Pin the 📡 icon and open it — a 3-step setup asks for your handle, your niche and your radar tab
 
-Tip: make an X list of 20–50 accounts in your niche, open it in its own tab and pick it as the radar tab in step 3 — auto-refresh turns on by itself.
+Tip: pick **🔎 Niche search** in step 3. It opens X's *Latest* tab for your niche (`(claude OR cursor OR "vibe coding" …) min_faves:10 lang:en`) — fresh posts from everyone in the niche that are already getting likes. Way more reply windows than a small list. Posts from your own X list skip the topic filter: you picked those accounts yourself.
 
 ## How it works
 

@@ -143,6 +143,9 @@ select { width: 100%; background: var(--panel); border: 1px solid var(--line); c
 .diag li b { color: var(--text); }
 .diag li.warn { color: var(--amber); list-style: none; margin-left: -16px; }
 
+.search-src { display: grid; gap: 6px; font-size: 12px; color: var(--dim); }
+.search-src small { color: var(--dim); }
+
 /* onboarding */
 #welcome { display: none; padding: 4px 18px 18px; }
 body.onboarding #welcome { display: block; }

@@ -1,5 +1,5 @@
 import { findChatId, sendMessage } from "./lib/telegram.js";
-import { DEFAULTS, TOPIC_PRESETS, emptyState, opportunities, replyStats, heatLabel, ago, goalStats, bestHours, emptyReason, isOnboarded } from "./lib/logic.js";
+import { DEFAULTS, TOPIC_PRESETS, SEARCH_PRESETS, emptyState, opportunities, replyStats, heatLabel, ago, goalStats, bestHours, emptyReason, isOnboarded, nicheSearchUrl } from "./lib/logic.js";
 
 const $ = (s) => document.querySelector(s);
 const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
@@ -318,6 +318,19 @@ $("#useTab").addEventListener("click", async () => {
   $("#form").autoRefresh.checked = true; // без авто-обновления вкладка-радар не видит новых постов
 });
 
+// Поиск по нише как радар: открываем вкладку «Latest» и сразу сохраняем её с авто-обновлением.
+$("#searchPresets").innerHTML = Object.keys(SEARCH_PRESETS).map((k) => `<button type="button" data-s="${esc(k)}">🔎 ${esc(k)}</button>`).join("");
+$("#searchPresets").addEventListener("click", async (e) => {
+  const k = e.target.dataset?.s;
+  if (!k) return;
+  const url = nicheSearchUrl(k);
+  settings = { ...settings, radarUrl: url, autoRefresh: true };
+  await chrome.storage.local.set({ settings });
+  fillForm();
+  chrome.tabs.create({ url, active: false });
+  $("#saved").textContent = "Radar → search ✓";
+});
+
 // Онбординг: три шага при первом открытии, чтобы радар сразу заработал, а не молчал на дефолтах.
 const NICHES = { ...TOPIC_PRESETS, "Any topic": [] };
 const picked = new Set(["AI & builders"]);
@@ -336,6 +349,14 @@ $("#wNiche").addEventListener("click", (e) => {
   else picked.delete("Any topic");
   picked.has(k) && k !== "Any topic" ? picked.delete(k) : picked.add(k);
   renderNiches();
+});
+
+$("#wSearch").addEventListener("click", () => {
+  const preset = [...picked].find((k) => SEARCH_PRESETS[k]) || "AI & builders";
+  wRadarUrl = nicheSearchUrl(preset);
+  chrome.tabs.create({ url: wRadarUrl, active: false });
+  $("#wTabStatus").className = "tg-status ok";
+  $("#wTabStatus").textContent = `✓ live search: ${preset} (opened in a tab)`;
 });
 
 $("#wTab").addEventListener("click", async () => {
