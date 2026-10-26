@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Reply Radar",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "description": "Know when to reply before everyone else. Fresh posts from big accounts on X, as they happen. No API, no cost.",
   "permissions": ["storage", "notifications", "alarms"],
   "host_permissions": ["https://x.com/*", "https://api.telegram.org/*"],

@@ -174,3 +174,10 @@ test("почему пусто: свежие посты и чем отсечен�
   assert.deepEqual(emptyReason({ scanned: 12, newestAge: 28, fresh: {} }, {}).tips, ["nothingFresh"]);
   assert.deepEqual(emptyReason(null, {}).tips, ["noScan"]);
 });
+
+test("онбординг: новичку показываем, тем кто уже настроил радар — нет", async () => {
+  const { isOnboarded } = await import("../extension/lib/logic.js");
+  assert.equal(isOnboarded({}), false);
+  assert.equal(isOnboarded({ me: "DaddyYarik" }), true, "настроил до онбординга");
+  assert.equal(isOnboarded({ onboarded: true }), true, "пропустил шаги");
+});

@@ -139,6 +139,22 @@ select { width: 100%; background: var(--panel); border: 1px solid var(--line); c
 .diag li b { color: var(--text); }
 .diag li.warn { color: var(--amber); list-style: none; margin-left: -16px; }
 
+/* onboarding */
+#welcome { display: none; padding: 4px 18px 18px; }
+body.onboarding #welcome { display: block; }
+body.onboarding nav, body.onboarding main, body.onboarding .actions { display: none; }
+.w-hero { text-align: center; padding: 14px 0 8px; }
+.w-hero h2 { margin: 14px 0 4px; font-size: 20px; letter-spacing: -.3px; }
+.w-hero p { margin: 0; color: var(--dim); font-size: 13px; }
+.w-step { display: grid; grid-template-columns: 28px 1fr; gap: 10px; padding: 14px 0; border-bottom: 1px solid var(--line); }
+.w-step > div { display: grid; gap: 6px; min-width: 0; }
+.w-step b { font-size: 14px; }
+.w-step small { color: var(--dim); font-size: 12px; margin-top: -4px; }
+.n { width: 26px; height: 26px; border-radius: 50%; background: rgba(29,155,240,.15); color: var(--blue); display: grid; place-items: center; font-weight: 800; font-size: 13px; }
+.presets button.on { background: var(--blue); color: #fff; border-color: var(--blue); }
+.w-go { display: grid; gap: 10px; padding-top: 16px; }
+.w-go .link { justify-self: center; color: var(--dim); }
+
 /* empty states */
 .empty { padding: 34px 26px 38px; color: var(--dim); text-align: center; }
 .empty b { color: var(--text); display: block; font-size: 17px; margin: 14px 0 6px; }

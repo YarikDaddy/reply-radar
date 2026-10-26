@@ -82,6 +82,11 @@ async function updateBadge(state, settings) {
 
 // Раз в минуту: обновить счётчик (окна для реплая «протухают») и, если включено, перезагрузить радар.
 chrome.alarms.create("tick", { periodInMinutes: 1 });
+
+// Сразу после установки открываем X: радар начинает видеть посты, а попап встретит онбордингом.
+chrome.runtime.onInstalled.addListener(({ reason }) => {
+  if (reason === "install") chrome.tabs.create({ url: "https://x.com/home" });
+});
 chrome.alarms.onAlarm.addListener((a) => {
   if (a.name === "tick") serial(tick);
 });

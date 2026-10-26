@@ -21,6 +21,30 @@
   </div>
 </header>
 
+<section id="welcome">
+  <div class="w-hero">
+    <div class="radar"></div>
+    <h2>Welcome to Reply Radar</h2>
+    <p>Three steps and it starts catching reply windows for you.</p>
+  </div>
+  <div class="w-step"><span class="n">1</span><div>
+    <b>Your X handle</b><small>to track your replies and daily goal</small>
+    <div class="at"><span>@</span><input type="text" id="wMe" placeholder="yourhandle" autocomplete="off"></div>
+  </div></div>
+  <div class="w-step"><span class="n">2</span><div>
+    <b>Your niche</b><small>only posts on these topics reach you</small>
+    <div class="presets" id="wNiche"></div>
+  </div></div>
+  <div class="w-step"><span class="n">3</span><div>
+    <b>Your radar tab</b><small>open an X list of accounts you reply to (or your Home feed), then:</small>
+    <div class="tg-row"><button type="button" class="btn small" id="wTab">Use current tab</button><span class="tg-status" id="wTabStatus"></span></div>
+  </div></div>
+  <div class="w-go">
+    <button type="button" class="btn" id="wStart">Start scanning</button>
+    <button type="button" class="link" id="wSkip">Skip — I'll set it up later</button>
+  </div>
+</section>
+
 <nav>
   <button data-tab="now" class="on">Now</button>
   <button data-tab="mine">My replies</button>

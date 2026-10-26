@@ -1,5 +1,5 @@
 import { findChatId, sendMessage } from "./lib/telegram.js";
-import { DEFAULTS, TOPIC_PRESETS, emptyState, opportunities, replyStats, heatLabel, ago, goalStats, bestHours, emptyReason } from "./lib/logic.js";
+import { DEFAULTS, TOPIC_PRESETS, emptyState, opportunities, replyStats, heatLabel, ago, goalStats, bestHours, emptyReason, isOnboarded } from "./lib/logic.js";
 
 const $ = (s) => document.querySelector(s);
 const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
@@ -11,13 +11,15 @@ let settings = { ...DEFAULTS };
 let meta = { seen: 0 };
 let snoozeUntil = 0;
 let tgError = null;
+let rawSettings = {};
 
 async function load() {
   const got = await chrome.storage.local.get(["state", "settings", "meta", "snoozeUntil"]);
   snoozeUntil = got.snoozeUntil || 0;
   tgError = (await chrome.storage.local.get("tgError")).tgError || null;
   state = got.state || emptyState();
-  settings = { ...DEFAULTS, ...got.settings };
+  rawSettings = got.settings || {};
+  settings = { ...DEFAULTS, ...rawSettings };
   meta = got.meta || { seen: 0 };
 }
 
@@ -291,11 +293,56 @@ $("#snooze").addEventListener("click", async () => {
 
 $("#share").addEventListener("click", () => chrome.tabs.create({ url: chrome.runtime.getURL("promo.html") }));
 
-$("#useTab").addEventListener("click", async () => {
+async function currentXTab() {
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-  if (tab?.url?.startsWith("https://x.com/")) $("#form").radarUrl.value = tab.url;
-  else $("#saved").textContent = "Open an x.com tab first";
+  return tab?.url?.startsWith("https://x.com/") ? tab.url : null;
+}
+
+$("#useTab").addEventListener("click", async () => {
+  const url = await currentXTab();
+  if (!url) return void ($("#saved").textContent = "Open an x.com tab first");
+  $("#form").radarUrl.value = url;
+  $("#form").autoRefresh.checked = true; // без авто-обновления вкладка-радар не видит новых постов
 });
+
+// Онбординг: три шага при первом открытии, чтобы радар сразу заработал, а не молчал на дефолтах.
+const NICHES = { ...TOPIC_PRESETS, "Any topic": [] };
+const picked = new Set(["AI & builders"]);
+let wRadarUrl = "";
+
+function renderNiches() {
+  $("#wNiche").innerHTML = Object.keys(NICHES)
+    .map((k) => `<button type="button" data-n="${esc(k)}" class="${picked.has(k) ? "on" : ""}">${esc(k)}</button>`)
+    .join("");
+}
+
+$("#wNiche").addEventListener("click", (e) => {
+  const k = e.target.dataset?.n;
+  if (!k) return;
+  if (k === "Any topic") picked.clear();
+  else picked.delete("Any topic");
+  picked.has(k) && k !== "Any topic" ? picked.delete(k) : picked.add(k);
+  renderNiches();
+});
+
+$("#wTab").addEventListener("click", async () => {
+  wRadarUrl = (await currentXTab()) || "";
+  $("#wTabStatus").className = wRadarUrl ? "tg-status ok" : "tg-status err";
+  $("#wTabStatus").textContent = wRadarUrl ? "✓ " + wRadarUrl.replace("https://x.com", "") : "Open an x.com tab first";
+});
+
+async function finishOnboarding(skip) {
+  const topics = skip ? [] : [...new Set([...picked].flatMap((k) => NICHES[k]))];
+  const me = $("#wMe").value.replace(/^@/, "").trim();
+  settings = { ...settings, onboarded: true, ...(skip ? {} : { me, topics, radarUrl: wRadarUrl, autoRefresh: Boolean(wRadarUrl) }) };
+  await chrome.storage.local.set({ settings });
+  document.body.classList.remove("onboarding");
+  fillForm();
+  renderNow();
+  renderMine();
+}
+$("#wStart").addEventListener("click", () => finishOnboarding(false));
+$("#wSkip").addEventListener("click", () => finishOnboarding(true));
 
 for (const b of document.querySelectorAll("nav button")) {
   b.addEventListener("click", () => {
@@ -306,6 +353,10 @@ for (const b of document.querySelectorAll("nav button")) {
 }
 
 await load();
+if (!isOnboarded(rawSettings)) {
+  document.body.classList.add("onboarding");
+  renderNiches();
+}
 fillForm();
 renderTg();
 renderNow();

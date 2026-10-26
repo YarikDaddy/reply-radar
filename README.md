@@ -4,7 +4,7 @@
 
 A free Chrome extension for X. It watches what X already loads in your browser and pings you the moment a big account posts — so your reply lands in the first minutes, when it still gets seen.
 
-- 🔔 Desktop notification + badge when a fresh post (≤ 20 min) from an account with 20k+ followers shows up in your feed or list
+- 🔔 Desktop notification + badge when a fresh post (≤ 15 min) from an account with 5k+ followers shows up in your feed or list
 - 🔥 **Heat**: how fast the post is taking off compared to that author's usual posts. Mega accounts only ping you when a post is actually flying
 - 📊 **Reply journal**: which of your replies got views, and how many followers you gained today
 - 💎 **Hidden gems**: posts with a big audience and almost no replies — your reply gets seen by almost everyone who opens them
@@ -20,13 +20,12 @@ A free Chrome extension for X. It watches what X already loads in your browser a
 
 ## Install (2 minutes)
 
-1. Download this repo (Code → Download ZIP) and unzip
+1. Download **`reply-radar-vX.zip`** from the [latest release](https://github.com/YarikDaddy/reply-radar/releases/latest) and unzip it
 2. Open `chrome://extensions`, turn on **Developer mode** (top right)
-3. **Load unpacked** → pick the `extension` folder
-4. Pin the 📡 icon, open Settings, enter your handle
-5. Keep an X tab open: your Home feed, or better — a list of the accounts you reply to
+3. **Load unpacked** → pick the unzipped folder
+4. Pin the 📡 icon and open it — a 3-step setup asks for your handle, your niche and your radar tab
 
-Tip: make an X list of 20–50 accounts in your niche, open it in its own tab, and in Settings press "Use current tab as radar" + turn on auto-refresh (every 3 min).
+Tip: make an X list of 20–50 accounts in your niche, open it in its own tab and pick it as the radar tab in step 3 — auto-refresh turns on by itself.
 
 ## How it works
 
@@ -42,6 +41,7 @@ Tip: make an X list of 20–50 accounts in your niche, open it in its own tab, a
 
 ```bash
 npm test          # parser + logic tests (Node 24, no dependencies)
+npm run pack      # build dist/reply-radar-vX.zip for a GitHub release
 ```
 
 `src/` holds the paused **API version** (X API pay-per-use → Telegram alerts, `npm run demo`). It's for later, when it makes sense to pay for alerts on your phone.
