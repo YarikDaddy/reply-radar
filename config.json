@@ -1,0 +1,19 @@
+{
+  "me": "DaddyYarik",
+  "pollEveryMin": 2,
+  "delayMin": 4,
+  "minHeat": 1.5,
+  "dailyBudgetUsd": 1.0,
+  "accounts": {
+    "always": [
+      "marclou", "tdinh_me", "dannypostmaa", "arvidkahl", "tibo_maker",
+      "jackfriks", "yongfook", "pontusab", "kitze", "steipete",
+      "simonw", "swyx", "mckaywrigley", "nutlope", "rileybrown_ai",
+      "mattshumer_", "bentossell", "alexalbert__", "leerob", "shadcn"
+    ],
+    "hot": [
+      "levelsio", "karpathy", "sama", "AnthropicAI", "OpenAI",
+      "rauchg", "OfficialLoganK", "gregisenberg", "t3dotgg", "nikitabier"
+    ]
+  }
+}

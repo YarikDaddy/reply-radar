@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Reply Radar</title>
+<link rel="stylesheet" href="popup.css">
+</head>
+<body>
+<header>
+  <div class="brand">
+    <div class="logo"><img src="icons/48.png" alt=""></div>
+    <div>
+      <b>Reply Radar</b>
+      <div class="sub"><span class="pulse" id="pulse"></span><span id="status">waiting for x.com</span></div>
+    </div>
+  </div>
+  <div class="actions">
+    <div class="count" id="count" hidden></div>
+    <button class="icon" id="snooze" title="Pause notifications for 1 hour">🔔</button>
+    <button class="icon" id="share" title="Open share card for X">📸</button>
+  </div>
+</header>
+
+<nav>
+  <button data-tab="now" class="on">Now</button>
+  <button data-tab="mine">My replies</button>
+  <button data-tab="settings">Settings</button>
+</nav>
+
+<main>
+  <section id="now" class="on"></section>
+  <section id="mine"></section>
+  <section id="settings">
+    <form id="form">
+      <fieldset>
+        <legend>You</legend>
+        <label><span>Your handle <small>for the reply journal</small></span>
+          <div class="at"><span>@</span><input type="text" name="me" placeholder="DaddyYarik" autocomplete="off"></div>
+        </label>
+        <label>Daily reply goal<input type="number" name="dailyGoal" min="1" max="200"></label>
+      </fieldset>
+
+      <fieldset>
+        <legend>What counts as a reply window</legend>
+        <div class="two">
+          <label>Min followers<input type="number" name="minFollowers" min="0" step="1000"></label>
+          <label>Window, minutes<input type="number" name="maxAgeMin" min="1" max="120"></label>
+        </div>
+        <div class="two">
+          <label><span>Skip if replies &gt; <small>0 = off</small></span><input type="number" name="maxReplies" min="0" step="5"></label>
+          <label>Mega account from<input type="number" name="hotFollowers" min="0" step="10000"></label>
+        </div>
+        <div class="two">
+          <label>Mega only when heat ≥<input type="number" name="minHeat" min="0" step="0.1"></label>
+          <label><span>💎 gem from <small>views / spot</small></span><input type="number" name="gemSpot" min="1" step="100"></label>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Topics <small>empty = any topic</small></legend>
+        <div class="presets" id="presets"></div>
+        <textarea name="topics" placeholder="ai, agent, saas, build, ship…"></textarea>
+        <label><span>Mute words <small>engagement bait</small></span><textarea name="muteWords"></textarea></label>
+        <label class="check"><input type="checkbox" name="englishOnly"> English posts only</label>
+      </fieldset>
+
+      <fieldset>
+        <legend>Accounts</legend>
+        <label><span>Watchlist <small>always alert, any size</small></span><textarea name="watchlist" placeholder="levelsio&#10;marclou"></textarea></label>
+        <label>Muted accounts<textarea name="muted"></textarea></label>
+      </fieldset>
+
+      <fieldset>
+        <legend>Radar tab</legend>
+        <label class="check"><input type="checkbox" name="autoRefresh"> Auto-refresh my radar tab</label>
+        <div class="two">
+          <label>Tab URL<input type="text" name="radarUrl" placeholder="https://x.com/i/lists/…"></label>
+          <label>Every, min<input type="number" name="refreshMin" min="2" max="60"></label>
+        </div>
+        <button type="button" class="link" id="useTab">↳ Use current tab as radar</button>
+        <label class="check"><input type="checkbox" name="notify"> Desktop notifications</label>
+      </fieldset>
+
+      <fieldset>
+        <legend>Telegram <small>gems on your phone</small></legend>
+        <ol class="steps">
+          <li>In Telegram open <b>@BotFather</b> → <code>/newbot</code> → copy the token</li>
+          <li>Paste it below, open your new bot and send it <code>/start</code></li>
+          <li>Press <b>Connect</b> — you'll get a test message</li>
+        </ol>
+        <label>Bot token<input type="password" name="tgToken" placeholder="123456:ABC…" autocomplete="off"></label>
+        <div class="tg-row"><button type="button" class="btn small" id="tgConnect">Connect</button><span id="tgStatus" class="tg-status"></span></div>
+        <label class="check"><input type="checkbox" name="tgEnabled"> Send alerts to Telegram</label>
+        <label>What to send
+          <select name="tgMode"><option value="gems">💎 Hidden gems only</option><option value="all">Every reply window</option></select>
+        </label>
+        <p class="hint">Works while this computer is awake with Chrome and your radar tab open (turn on auto-refresh above).</p>
+      </fieldset>
+
+      <p class="hint">Reply Radar only reads what X already loads in your browser. No API, no extra requests to X. Nothing leaves your computer — except alerts to your own Telegram bot, if you turn that on. It never posts or replies for you.</p>
+      <div class="save"><button class="btn">Save</button><span id="saved"></span></div>
+    </form>
+  </section>
+</main>
+<script type="module" src="popup.js"></script>
+</body>
+</html>

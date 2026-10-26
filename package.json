@@ -1,0 +1,14 @@
+{
+  "name": "reply-radar",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Know when to reply before everyone else: fresh posts from big X accounts → Telegram",
+  "scripts": {
+    "start": "node --env-file-if-exists=.env src/main.ts",
+    "demo": "FAKE=1 ONCE=1 node src/main.ts",
+    "report": "node --env-file-if-exists=.env src/report-cli.ts",
+    "test": "node --test \"test/*.test.ts\""
+  },
+  "engines": { "node": ">=24" }
+}
